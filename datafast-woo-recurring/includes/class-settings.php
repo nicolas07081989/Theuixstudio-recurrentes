@@ -54,6 +54,11 @@ class Settings
             return $settings[$key];
         }
 
+        $prefixed_option = get_option('woocommerce_pg_woocommerce_' . $key, null);
+        if ($prefixed_option !== null && $prefixed_option !== '') {
+            return $prefixed_option;
+        }
+
         $legacy_map = [
             'title' => 'DATAFAST_TITLE',
             'description' => 'DATAFAST_DESCRIPTION',

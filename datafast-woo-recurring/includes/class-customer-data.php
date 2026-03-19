@@ -36,7 +36,10 @@ class Customer_Data
     {
         $errors = [];
         $this->check_len($payload, 'customer.givenName', 3, 48, $errors);
-        $this->check_len($payload, 'customer.middleName', 2, 50, $errors);
+        $middle_name = trim((string) ($payload['customer.middleName'] ?? ''));
+        if ($middle_name !== '') {
+            $this->check_len($payload, 'customer.middleName', 2, 50, $errors);
+        }
         $this->check_len($payload, 'customer.surname', 3, 48, $errors);
         if (! filter_var($payload['customer.ip'] ?? '', FILTER_VALIDATE_IP)) {
             $errors[] = 'customer.ip inválida';
