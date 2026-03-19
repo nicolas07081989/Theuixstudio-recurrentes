@@ -88,6 +88,7 @@ class Settings
         $settings[] = ['title' => __('Retención de logs (días)', 'datafast-woo-recurring'), 'id' => 'woocommerce_pg_woocommerce_log_retention_days', 'type' => 'number', 'default' => 30];
         $settings[] = ['title' => __('Canal checkout USER_DATA2', 'datafast-woo-recurring'), 'id' => 'woocommerce_pg_woocommerce_risk_user_data2', 'type' => 'text'];
         $settings[] = ['title' => __('Activar tokenización', 'datafast-woo-recurring'), 'id' => 'woocommerce_pg_woocommerce_enabled_tokenization', 'type' => 'checkbox', 'default' => 'yes'];
+        $settings[] = ['title' => __('Modo cuotas checkout', 'datafast-woo-recurring'), 'id' => 'woocommerce_pg_woocommerce_installments_param_mode', 'type' => 'select', 'options' => ['legacy_recurring_installments' => 'legacy recurring.numberOfInstallments', 'type_only' => 'solo SHOPPER_TIPOCREDITO', 'custom_differido' => 'SHOPPER_DIFERIDO compat'], 'default' => 'legacy_recurring_installments'];
         $settings[] = ['title' => __('Activar recurrencias', 'datafast-woo-recurring'), 'id' => 'woocommerce_pg_woocommerce_enable_recurring', 'type' => 'checkbox', 'default' => 'yes'];
         $settings[] = ['title' => __('Requerir cuenta para recurrentes', 'datafast-woo-recurring'), 'id' => 'woocommerce_pg_woocommerce_require_account_recurring', 'type' => 'checkbox', 'default' => 'yes'];
         $settings[] = ['title' => __('Base URL recurrente test', 'datafast-woo-recurring'), 'id' => 'woocommerce_pg_woocommerce_base_url_recurring_test', 'type' => 'text'];

@@ -1,10 +1,10 @@
-# Payload Examples (Datafast)
+# Payload Examples (final)
 
-## 1) Checkout Fase 2 - orden simple
+## Pago corriente (checkout normal)
 ```php
 [
   'entityId' => '8ac7a4c...TEST',
-  'amount' => '25.00',
+  'amount' => '30.00',
   'currency' => 'USD',
   'paymentType' => 'DB',
   'merchantTransactionId' => 'DF-1201-20260319183000-AB12CD34EF56',
@@ -21,13 +21,13 @@
   'billing.country' => 'EC',
   'shipping.street1' => 'Av. Primera 123',
   'shipping.country' => 'EC',
-  'cart.items[0].name' => 'Servicio mensual',
-  'cart.items[0].description' => 'Servicio mensual',
-  'cart.items[0].price' => '25.00',
+  'cart.items[0].name' => 'Plan corriente',
+  'cart.items[0].description' => 'Plan corriente',
+  'cart.items[0].price' => '30.00',
   'cart.items[0].quantity' => '1',
   'customParameters[SHOPPER_VAL_BASE0]' => '0.00',
-  'customParameters[SHOPPER_VAL_BASEIMP]' => '22.32',
-  'customParameters[SHOPPER_VAL_IVA]' => '2.68',
+  'customParameters[SHOPPER_VAL_BASEIMP]' => '26.79',
+  'customParameters[SHOPPER_VAL_IVA]' => '3.21',
   'customParameters[SHOPPER_MID]' => '1000000001',
   'customParameters[SHOPPER_TID]' => '00000001',
   'customParameters[SHOPPER_ECI]' => '0103910',
@@ -38,16 +38,24 @@
 ]
 ```
 
-## 2) Checkout Fase 2 - multi ítem
-Incluye `cart.items[0..n]` y mismos campos base.
+## Pago diferido 3 cuotas (modo recomendado legacy)
+```php
+[
+  // ... mismos campos base ...
+  'customParameters[SHOPPER_TIPOCREDITO]' => '22',
+  'recurring.numberOfInstallments' => '3',
+]
+```
 
-## 3) Checkout con impuestos mixtos
-`SHOPPER_VAL_BASE0=10.00`, `SHOPPER_VAL_BASEIMP=30.00`, `SHOPPER_VAL_IVA=3.60`.
+## Pago con tipo de crédito 22 (sin cuotas explícitas)
+```php
+[
+  // ... mismos campos base ...
+  'customParameters[SHOPPER_TIPOCREDITO]' => '22',
+]
+```
 
-## 4) Checkout con base 0 solamente
-`SHOPPER_VAL_BASE0=50.00`, `SHOPPER_VAL_BASEIMP=0.00`, `SHOPPER_VAL_IVA=0.00`.
-
-## 5) Recurrente con token
+## Pago recurrente con token
 ```php
 [
   'entityId' => '8ac7a4c...REC',

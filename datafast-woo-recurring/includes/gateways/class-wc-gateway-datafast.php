@@ -115,7 +115,8 @@ class Gateway_Datafast extends WC_Payment_Gateway
             $payload = $this->buildInitialBody($order, $merchant_tx, isset($_POST['createRegistration']));
             $term_type = isset($_POST['dfwr_termtype']) ? sanitize_text_field(wp_unslash($_POST['dfwr_termtype'])) : '';
             $months = isset($_POST['dfwr_installments']) ? sanitize_text_field(wp_unslash($_POST['dfwr_installments'])) : '';
-            $payload = (new Installments_Service())->append_payload($payload, $term_type, $months);
+            $installments = new Installments_Service();
+            $payload = $installments->append_payload($payload, $term_type, $months);
             if ($selected_registration !== '') {
                 $payload['registrations[0].id'] = $selected_registration;
             }
@@ -132,7 +133,7 @@ class Gateway_Datafast extends WC_Payment_Gateway
             ]);
 
             $cfg = Environment::checkout_config();
-            Logger::log('Checkout request', ['order_id' => $order->get_id(), 'payload' => $payload]);
+            Logger::log('Checkout request', ['order_id' => $order->get_id(), 'payload' => $payload, 'installments_mode' => Settings::get('installments_param_mode', 'legacy_recurring_installments')]);
             $result = (new Http_Client())->post_form(rtrim($cfg['base_url'], '/') . '/v1/checkouts', $payload, $cfg['bearer'], $cfg['mode'] !== 'prod');
             Logger::log('Checkout response', ['order_id' => $order->get_id(), 'response' => $result]);
             if (! $result['ok']) {
@@ -194,7 +195,9 @@ class Gateway_Datafast extends WC_Payment_Gateway
             if (! empty($body['customParameters']['SHOPPER_TIPOCREDITO'] ?? '')) {
                 $order->update_meta_data('_dfwr_response_termtype', $body['customParameters']['SHOPPER_TIPOCREDITO']);
             }
-            if (! empty($body['customParameters']['SHOPPER_DIFERIDO'] ?? '')) {
+            if (! empty($body['recurring']['numberOfInstallments'] ?? '')) {
+                $order->update_meta_data('_dfwr_response_installments', $body['recurring']['numberOfInstallments']);
+            } elseif (! empty($body['customParameters']['SHOPPER_DIFERIDO'] ?? '')) {
                 $order->update_meta_data('_dfwr_response_installments', $body['customParameters']['SHOPPER_DIFERIDO']);
             }
             if (! empty($body['registrationId']) && $order->get_user_id()) {
