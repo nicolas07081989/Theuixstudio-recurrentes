@@ -292,17 +292,33 @@ class Gateway_Datafast extends WC_Payment_Gateway
                 'token_final_used' => $token_final,
                 'has_recurring' => $has_recurring ? 'yes' : 'no',
                 'subscription_created_before' => $order->get_meta('_dfwr_subscription_created') === 'yes' ? 'yes' : 'no',
+                'order_saved_before_subscription_creation' => 'yes',
             ]);
             if ($has_recurring) {
                 if ($token_final !== '') {
-                    Plugin::instance()->maybe_create_subscription_from_order((int) $order->get_id());
-                    $order = wc_get_order((int) $order->get_id()) ?: $order;
-                    if ($order->get_meta('_dfwr_subscription_created') === 'yes') {
-                        $order->add_order_note(__('Datafast: suscripción creada automáticamente al aprobarse el pago.', 'datafast-woo-recurring'));
+                    if ($order->get_meta('_dfwr_subscription_created') !== 'yes') {
+                        $sub_repo = new Subscription_Repository();
+                        $subscription_id = $sub_repo->create_from_order($order, $token_final);
+                        $last_error = $sub_repo->get_last_error();
+                        Logger::log('Finalize auto subscription result', [
+                            'order_id' => $order->get_id(),
+                            'final_registration_id' => $token_final,
+                            'has_recurring' => 'yes',
+                            'subscription_insert_result' => $subscription_id > 0 ? 'success' : 'failed',
+                            'subscription_id' => $subscription_id,
+                            'wpdb_last_error' => $last_error,
+                        ]);
+                        if ($subscription_id > 0) {
+                            $order->update_meta_data('_dfwr_subscription_created', 'yes');
+                            $order->add_order_note(sprintf('Datafast: suscripción creada automáticamente al aprobarse el pago. ID %d', $subscription_id));
+                        } else {
+                            $order->add_order_note('Datafast: no se pudo crear suscripción automática en BD.' . ($last_error !== '' ? ' Error: ' . $last_error : ''));
+                        }
+                        $order->save();
                     } else {
-                        $order->add_order_note(__('Datafast: se intentó crear suscripción automáticamente, pero quedó pendiente.', 'datafast-woo-recurring'));
+                        $order->add_order_note(__('Datafast: la suscripción ya estaba marcada como creada.', 'datafast-woo-recurring'));
+                        $order->save();
                     }
-                    $order->save();
                 } else {
                     $order->add_order_note(__('Datafast: suscripción pendiente; pago aprobado sin token final para recurrencia.', 'datafast-woo-recurring'));
                     $order->save();
