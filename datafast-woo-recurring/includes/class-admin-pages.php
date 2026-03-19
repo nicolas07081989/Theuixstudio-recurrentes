@@ -14,6 +14,7 @@ class Admin_Pages
         add_submenu_page('dfwr-transactions', 'Transacciones', 'Transacciones', 'manage_woocommerce', 'dfwr-transactions', [__CLASS__, 'transactions_page']);
         add_submenu_page('dfwr-transactions', 'Suscripciones', 'Suscripciones', 'manage_woocommerce', 'dfwr-subscriptions', [__CLASS__, 'subscriptions_page']);
         add_submenu_page('dfwr-transactions', 'Tokens', 'Tokens', 'manage_woocommerce', 'dfwr-tokens', [__CLASS__, 'tokens_page']);
+        add_submenu_page('dfwr-transactions', 'Tipos de Crédito', 'Tipos de Crédito', 'manage_woocommerce', 'dfwr-termtypes', [__CLASS__, 'termtypes_page']);
         add_submenu_page('dfwr-transactions', 'Herramientas', 'Herramientas', 'manage_woocommerce', 'dfwr-tools', [__CLASS__, 'tools_page']);
     }
 
@@ -60,6 +61,18 @@ class Admin_Pages
         echo '<div class="wrap"><h1>Datafast Tokens</h1><table class="widefat"><thead><tr><th>ID</th><th>User</th><th>Token</th><th>Estado</th><th>Last4</th></tr></thead><tbody>';
         foreach ($rows as $r) {
             echo '<tr><td>' . esc_html((string) $r['id']) . '</td><td>' . esc_html((string) $r['wp_user_id']) . '</td><td><code>' . esc_html((string) $r['registration_id']) . '</code></td><td>' . esc_html((string) $r['is_active']) . '</td><td>' . esc_html((string) $r['last4']) . '</td></tr>';
+        }
+        echo '</tbody></table></div>';
+    }
+
+
+    public static function termtypes_page(): void
+    {
+        $svc = new Installments_Service();
+        $types = $svc->get_credit_types();
+        echo '<div class="wrap"><h1>Tipos de Crédito (legacy)</h1><table class="widefat"><thead><tr><th>Código</th><th>Descripción</th></tr></thead><tbody>';
+        foreach ($types as $code => $label) {
+            echo '<tr><td><code>' . esc_html((string) $code) . '</code></td><td>' . esc_html((string) $label) . '</td></tr>';
         }
         echo '</tbody></table></div>';
     }

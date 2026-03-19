@@ -22,10 +22,12 @@ class Tax_Mapper
         }
 
         $base_imp = max(0, $base_imp);
-        return [
+        $result = [
             'SHOPPER_VAL_BASE0' => number_format($base0, 2, '.', ''),
             'SHOPPER_VAL_BASEIMP' => number_format($base_imp, 2, '.', ''),
             'SHOPPER_VAL_IVA' => number_format($tax, 2, '.', ''),
         ];
+        Logger::log('Tax mapping calculado', ['order_id' => $order->get_id(), 'tax' => $result]);
+        return $result;
     }
 }

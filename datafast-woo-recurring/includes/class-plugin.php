@@ -13,6 +13,7 @@ require_once DFWR_PLUGIN_DIR . 'includes/class-http-client.php';
 require_once DFWR_PLUGIN_DIR . 'includes/class-tax-mapper.php';
 require_once DFWR_PLUGIN_DIR . 'includes/class-customer-data.php';
 require_once DFWR_PLUGIN_DIR . 'includes/class-order-mapper.php';
+require_once DFWR_PLUGIN_DIR . 'includes/class-installments-service.php';
 require_once DFWR_PLUGIN_DIR . 'includes/class-token-repository.php';
 require_once DFWR_PLUGIN_DIR . 'includes/class-transaction-repository.php';
 require_once DFWR_PLUGIN_DIR . 'includes/class-subscription-repository.php';

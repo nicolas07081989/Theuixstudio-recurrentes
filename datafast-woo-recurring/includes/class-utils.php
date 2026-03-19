@@ -44,16 +44,20 @@ class Utils
 
     public static function merchant_transaction_id(int $order_id, string $prefix = 'DFWC'): string
     {
-        return substr($prefix . '-' . $order_id . '-' . gmdate('YmdHis') . '-' . wp_generate_password(6, false, false), 0, 64);
+        $id = $prefix . '-' . $order_id . '-' . gmdate('YmdHis') . '-' . wp_generate_password(12, false, false);
+        if (strlen($id) < 8) {
+            $id .= '-TRX';
+        }
+        return substr($id, 0, 255);
     }
 
     public static function merchant_customer_id(int $user_id): string
     {
         $meta = get_user_meta($user_id, '_dfwr_merchant_customer_id', true);
         if ($meta) {
-            return $meta;
+            return substr((string) $meta, 0, 16);
         }
-        $new = 'DFCUST-' . $user_id;
+        $new = substr('DFCUST' . $user_id, 0, 16);
         update_user_meta($user_id, '_dfwr_merchant_customer_id', $new);
         return $new;
     }
