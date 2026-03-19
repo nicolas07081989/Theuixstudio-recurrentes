@@ -23,7 +23,6 @@ require_once DFWR_PLUGIN_DIR . 'includes/class-webhook-or-return-handler.php';
 require_once DFWR_PLUGIN_DIR . 'includes/class-admin-pages.php';
 require_once DFWR_PLUGIN_DIR . 'includes/class-rest-controller.php';
 require_once DFWR_PLUGIN_DIR . 'includes/class-myaccount.php';
-require_once DFWR_PLUGIN_DIR . 'includes/gateways/class-wc-gateway-datafast.php';
 
 final class Plugin
 {
@@ -43,6 +42,12 @@ final class Plugin
         if (! class_exists('WooCommerce')) {
             return;
         }
+
+        if (! class_exists('WC_Payment_Gateway')) {
+            return;
+        }
+
+        require_once DFWR_PLUGIN_DIR . 'includes/gateways/class-wc-gateway-datafast.php';
 
         Settings::init();
         Admin_Pages::init();
