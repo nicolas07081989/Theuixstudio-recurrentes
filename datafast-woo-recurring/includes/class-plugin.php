@@ -172,8 +172,16 @@ final class Plugin
         }
 
         $sub_repo = new Subscription_Repository();
-        $sub_repo->create_from_order($order, $token);
-        $order->update_meta_data('_dfwr_subscription_created', 'yes');
+        $subscription_id = $sub_repo->create_from_order($order, $token);
+        if ($subscription_id > 0) {
+            $order->update_meta_data('_dfwr_subscription_created', 'yes');
+            $order->add_order_note(sprintf('Datafast: suscripción interna creada correctamente (ID %d).', $subscription_id));
+            $order->save();
+            return;
+        }
+
+        $error = $sub_repo->get_last_error();
+        $order->add_order_note('Datafast: no se pudo crear suscripción interna en BD.' . ($error !== '' ? ' Error: ' . $error : ''));
         $order->save();
     }
 }
