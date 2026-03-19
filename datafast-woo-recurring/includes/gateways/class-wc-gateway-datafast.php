@@ -131,7 +131,11 @@ class Gateway_Datafast extends WC_Payment_Gateway
             ]);
 
             $cfg = Environment::checkout_config();
-            Logger::log('Checkout request', ['order_id' => $order->get_id(), 'payload' => $payload]);
+            Logger::log('Checkout request', [
+                'order_id' => $order->get_id(),
+                'create_registration_requested' => $create_registration ? 'yes' : 'no',
+                'payload' => $payload,
+            ]);
             $result = (new Http_Client())->post_form(rtrim($cfg['base_url'], '/') . '/v1/checkouts', $payload, $cfg['bearer'], $cfg['mode'] !== 'prod');
             Logger::log('Checkout response', ['order_id' => $order->get_id(), 'response' => $result]);
             if (! $result['ok']) {
@@ -144,6 +148,8 @@ class Gateway_Datafast extends WC_Payment_Gateway
 
             $order->update_meta_data('_dfwr_merchant_transaction_id', $merchant_tx);
             $order->update_meta_data('_dfwr_checkout_id', $checkout_id);
+            $order->update_meta_data('_dfwr_create_registration_requested', $create_registration ? 'yes' : 'no');
+            $order->update_meta_data('_dfwr_checkout_payload', wp_json_encode($payload));
             $order->save();
 
             $return_url = add_query_arg(['wc-api' => 'dfwr_return', 'order_id' => $order->get_id(), 'paymentDatafast' => 'confirm'], home_url('/'));
@@ -182,6 +188,13 @@ class Gateway_Datafast extends WC_Payment_Gateway
         ]);
 
         if ($state === 'approved') {
+            $has_registration_id = ! empty($body['registrationId']);
+            $registration_id = $has_registration_id ? (string) $body['registrationId'] : '';
+            Logger::log('Checkout verify registrationId', [
+                'order_id' => $order->get_id(),
+                'has_registration_id' => $has_registration_id ? 'yes' : 'no',
+                'registration_id' => $registration_id,
+            ]);
             $order->payment_complete($body['id'] ?? '');
             $order->add_order_note('Datafast aprobado: ' . ($body['result']['description'] ?? 'OK'));
             $order->update_meta_data('_dfwr_payment_id', $body['id'] ?? '');
@@ -196,18 +209,26 @@ class Gateway_Datafast extends WC_Payment_Gateway
             } elseif (! empty($body['customParameters']['SHOPPER_DIFERIDO'] ?? '')) {
                 $order->update_meta_data('_dfwr_response_installments', $body['customParameters']['SHOPPER_DIFERIDO']);
             }
-            if (! empty($body['registrationId']) && $order->get_user_id()) {
+            $order->update_meta_data('_dfwr_registration_id_received', $has_registration_id ? 'yes' : 'no');
+            if ($has_registration_id) {
+                $order->update_meta_data('_dfwr_registration_id_value', $registration_id);
+            }
+            if ($has_registration_id && $order->get_user_id()) {
                 $token_repo = new Token_Repository();
                 $token_repo->upsert([
                     'wp_user_id' => $order->get_user_id(),
                     'merchant_customer_id' => Utils::merchant_customer_id((int) $order->get_user_id()),
-                    'registration_id' => $body['registrationId'],
+                    'registration_id' => $registration_id,
                     'brand' => $body['paymentBrand'] ?? null,
                     'last4' => $body['card']['last4Digits'] ?? null,
                     'expiry_month' => $body['card']['expiryMonth'] ?? null,
                     'expiry_year' => $body['card']['expiryYear'] ?? null,
                 ]);
-                $order->update_meta_data('_dfwr_registration_id', $body['registrationId']);
+                $order->update_meta_data('_dfwr_registration_id', $registration_id);
+            }
+            $create_requested = (string) $order->get_meta('_dfwr_create_registration_requested');
+            if ($create_requested === 'yes' && ! $has_registration_id) {
+                $order->add_order_note(__('Datafast: pago aprobado pero la respuesta no devolvió registrationId; no se pudo guardar token.', 'datafast-woo-recurring'));
             }
             $has_recurring = false;
             foreach ($order->get_items() as $item) {
