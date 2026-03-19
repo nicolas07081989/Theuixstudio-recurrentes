@@ -90,6 +90,35 @@ final class Plugin
             if (strlen(preg_replace('/\D+/', '', $doc)) < 5) {
                 wc_add_notice(__('La identificación es obligatoria y debe contener al menos 5 dígitos.', 'datafast-woo-recurring'), 'error');
             }
+
+            $has_recurring = false;
+            foreach (WC()->cart?->get_cart() ?? [] as $cart_item) {
+                $product = $cart_item['data'] ?? null;
+                if ($product && $product->get_meta('_dfwr_is_recurring') === 'yes') {
+                    $has_recurring = true;
+                    break;
+                }
+            }
+
+            if (! $has_recurring) {
+                return;
+            }
+
+            $selected_method = isset($_POST['payment_method']) ? sanitize_text_field(wp_unslash($_POST['payment_method'])) : '';
+            if ($selected_method !== 'pg_woocommerce') {
+                return;
+            }
+
+            $creating_account = ! empty($_POST['createaccount']);
+            if (! is_user_logged_in() && ! $creating_account) {
+                wc_add_notice(__('Para productos recurrentes debes iniciar sesión o crear una cuenta.', 'datafast-woo-recurring'), 'error');
+            }
+
+            $selected_registration = isset($_POST['dfwr_registration']) ? sanitize_text_field(wp_unslash($_POST['dfwr_registration'])) : '';
+            $create_registration = ! empty($_POST['createRegistration']);
+            if ($selected_registration === '' && ! $create_registration) {
+                wc_add_notice(__('Para productos recurrentes debes guardar tarjeta o seleccionar una tarjeta guardada.', 'datafast-woo-recurring'), 'error');
+            }
         });
 
         add_action('woocommerce_checkout_create_order', static function ($order, array $data): void {

@@ -61,16 +61,6 @@ class Gateway_Datafast extends WC_Payment_Gateway
                 }
             }
         }
-        $installments = new Installments_Service();
-        $types = $installments->get_credit_types();
-        if ($types) {
-            echo '<p><label>' . esc_html__('Tipo de crédito', 'datafast-woo-recurring') . '</label><select name="dfwr_termtype"><option value="">--</option>';
-            foreach ($types as $code => $label) {
-                echo '<option value="' . esc_attr($code) . '">' . esc_html($label) . '</option>';
-            }
-            echo '</select></p>';
-            echo '<p><label>' . esc_html__('Diferido (meses)', 'datafast-woo-recurring') . '</label><input type="number" name="dfwr_installments" min="1" max="48" /></p>';
-        }
         if (Settings::get('enabled_tokenization', 'yes') === 'yes') {
             echo '<p><label><input type="checkbox" name="createRegistration" value="1"> ' . esc_html__('Guardar tarjeta de forma segura', 'datafast-woo-recurring') . '</label></p>';
         }
@@ -112,11 +102,19 @@ class Gateway_Datafast extends WC_Payment_Gateway
         try {
             $merchant_tx = Utils::merchant_transaction_id($order->get_id(), Settings::get('prefijo_trx', 'DF'));
             $selected_registration = isset($_POST['dfwr_registration']) ? sanitize_text_field(wp_unslash($_POST['dfwr_registration'])) : '';
-            $payload = $this->buildInitialBody($order, $merchant_tx, isset($_POST['createRegistration']));
-            $term_type = isset($_POST['dfwr_termtype']) ? sanitize_text_field(wp_unslash($_POST['dfwr_termtype'])) : '';
-            $months = isset($_POST['dfwr_installments']) ? sanitize_text_field(wp_unslash($_POST['dfwr_installments'])) : '';
-            $installments = new Installments_Service();
-            $payload = $installments->append_payload($payload, $term_type, $months);
+            $create_registration = isset($_POST['createRegistration']);
+            $payload = $this->buildInitialBody($order, $merchant_tx, $create_registration);
+            $requires_recurring_token = false;
+            foreach ($order->get_items() as $item) {
+                $product = $item->get_product();
+                if ($product && $product->get_meta('_dfwr_is_recurring') === 'yes') {
+                    $requires_recurring_token = true;
+                    break;
+                }
+            }
+            if ($requires_recurring_token && $selected_registration === '' && ! $create_registration) {
+                throw new \RuntimeException(__('Para productos recurrentes debes guardar tarjeta o seleccionar una tarjeta guardada.', 'datafast-woo-recurring'));
+            }
             if ($selected_registration !== '') {
                 $payload['registrations[0].id'] = $selected_registration;
             }
@@ -133,7 +131,7 @@ class Gateway_Datafast extends WC_Payment_Gateway
             ]);
 
             $cfg = Environment::checkout_config();
-            Logger::log('Checkout request', ['order_id' => $order->get_id(), 'payload' => $payload, 'installments_mode' => Settings::get('installments_param_mode', 'legacy_recurring_installments')]);
+            Logger::log('Checkout request', ['order_id' => $order->get_id(), 'payload' => $payload]);
             $result = (new Http_Client())->post_form(rtrim($cfg['base_url'], '/') . '/v1/checkouts', $payload, $cfg['bearer'], $cfg['mode'] !== 'prod');
             Logger::log('Checkout response', ['order_id' => $order->get_id(), 'response' => $result]);
             if (! $result['ok']) {
@@ -146,8 +144,6 @@ class Gateway_Datafast extends WC_Payment_Gateway
 
             $order->update_meta_data('_dfwr_merchant_transaction_id', $merchant_tx);
             $order->update_meta_data('_dfwr_checkout_id', $checkout_id);
-            if ($term_type !== '') { $order->update_meta_data('_dfwr_termtype', $term_type); }
-            if ($months !== '') { $order->update_meta_data('_dfwr_installments', $months); }
             $order->save();
 
             $return_url = add_query_arg(['wc-api' => 'dfwr_return', 'order_id' => $order->get_id(), 'paymentDatafast' => 'confirm'], home_url('/'));
@@ -212,6 +208,17 @@ class Gateway_Datafast extends WC_Payment_Gateway
                     'expiry_year' => $body['card']['expiryYear'] ?? null,
                 ]);
                 $order->update_meta_data('_dfwr_registration_id', $body['registrationId']);
+            }
+            $has_recurring = false;
+            foreach ($order->get_items() as $item) {
+                $product = $item->get_product();
+                if ($product && $product->get_meta('_dfwr_is_recurring') === 'yes') {
+                    $has_recurring = true;
+                    break;
+                }
+            }
+            if ($has_recurring && empty($body['registrationId'])) {
+                $order->add_order_note(__('Datafast: pago aprobado sin registrationId. No se creó suscripción interna.', 'datafast-woo-recurring'));
             }
             $order->save();
             WC()->cart?->empty_cart();
