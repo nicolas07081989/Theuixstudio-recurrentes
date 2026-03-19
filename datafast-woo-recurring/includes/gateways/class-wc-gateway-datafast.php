@@ -284,6 +284,7 @@ class Gateway_Datafast extends WC_Payment_Gateway
             $order->save();
 
             $token_final = (string) $order->get_meta('_dfwr_registration_id');
+            $subscription_created_now = false;
             Logger::log('Finalize auto subscription attempt', [
                 'order_id' => $order->get_id(),
                 'state' => $state,
@@ -309,6 +310,7 @@ class Gateway_Datafast extends WC_Payment_Gateway
                         if ($subscription_id > 0) {
                             $order->update_meta_data('_dfwr_subscription_created', 'yes');
                             $order->add_order_note(sprintf('Datafast: suscripción creada automáticamente al aprobarse el pago. ID %d', $subscription_id));
+                            $subscription_created_now = true;
                         } else {
                             $order->add_order_note('Datafast: fallo creación automática de suscripción.' . ($last_error !== '' ? ' Error: ' . $last_error : ''));
                         }
@@ -324,6 +326,9 @@ class Gateway_Datafast extends WC_Payment_Gateway
             }
             $order->payment_complete($body['id'] ?? '');
             $order->add_order_note('Datafast aprobado: ' . ($body['result']['description'] ?? 'OK'));
+            if ($subscription_created_now) {
+                $order->update_status('completed', __('Datafast: pedido inicial recurrente marcado como completado tras crear suscripción.', 'datafast-woo-recurring'));
+            }
             WC()->cart?->empty_cart();
             return;
         }
