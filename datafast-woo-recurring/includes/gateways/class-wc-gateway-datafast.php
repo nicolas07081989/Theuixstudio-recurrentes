@@ -226,8 +226,6 @@ class Gateway_Datafast extends WC_Payment_Gateway
                 'registration_id' => $registration_id,
                 'final_registration_id' => $final_registration_id,
             ]);
-            $order->payment_complete($body['id'] ?? '');
-            $order->add_order_note('Datafast aprobado: ' . ($body['result']['description'] ?? 'OK'));
             $order->update_meta_data('_dfwr_payment_id', $body['id'] ?? '');
             $order->update_meta_data('_dfwr_result_code', $body['result']['code'] ?? '');
             $order->update_meta_data('_dfwr_result_description', $body['result']['description'] ?? '');
@@ -312,7 +310,7 @@ class Gateway_Datafast extends WC_Payment_Gateway
                             $order->update_meta_data('_dfwr_subscription_created', 'yes');
                             $order->add_order_note(sprintf('Datafast: suscripción creada automáticamente al aprobarse el pago. ID %d', $subscription_id));
                         } else {
-                            $order->add_order_note('Datafast: no se pudo crear suscripción automática en BD.' . ($last_error !== '' ? ' Error: ' . $last_error : ''));
+                            $order->add_order_note('Datafast: fallo creación automática de suscripción.' . ($last_error !== '' ? ' Error: ' . $last_error : ''));
                         }
                         $order->save();
                     } else {
@@ -324,6 +322,8 @@ class Gateway_Datafast extends WC_Payment_Gateway
                     $order->save();
                 }
             }
+            $order->payment_complete($body['id'] ?? '');
+            $order->add_order_note('Datafast aprobado: ' . ($body['result']['description'] ?? 'OK'));
             WC()->cart?->empty_cart();
             return;
         }
