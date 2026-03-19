@@ -212,10 +212,14 @@ class Gateway_Datafast extends WC_Payment_Gateway
         if ($state === 'approved') {
             $has_registration_id = ! empty($body['registrationId']);
             $registration_id = $has_registration_id ? (string) $body['registrationId'] : '';
+            $selected_registration = (string) $order->get_meta('_dfwr_selected_registration');
+            $final_registration_id = $registration_id !== '' ? $registration_id : $selected_registration;
             Logger::log('Checkout verify registrationId', [
                 'order_id' => $order->get_id(),
+                'selected_registration' => $selected_registration,
                 'has_registration_id' => $has_registration_id ? 'yes' : 'no',
                 'registration_id' => $registration_id,
+                'final_registration_id' => $final_registration_id,
             ]);
             $order->payment_complete($body['id'] ?? '');
             $order->add_order_note('Datafast aprobado: ' . ($body['result']['description'] ?? 'OK'));
@@ -235,6 +239,9 @@ class Gateway_Datafast extends WC_Payment_Gateway
             if ($has_registration_id) {
                 $order->update_meta_data('_dfwr_registration_id_value', $registration_id);
             }
+            if ($final_registration_id !== '') {
+                $order->update_meta_data('_dfwr_registration_id', $final_registration_id);
+            }
             if ($has_registration_id && $order->get_user_id()) {
                 $token_repo = new Token_Repository();
                 $token_repo->upsert([
@@ -246,7 +253,11 @@ class Gateway_Datafast extends WC_Payment_Gateway
                     'expiry_month' => $body['card']['expiryMonth'] ?? null,
                     'expiry_year' => $body['card']['expiryYear'] ?? null,
                 ]);
-                $order->update_meta_data('_dfwr_registration_id', $registration_id);
+            }
+            if ($registration_id !== '') {
+                $order->add_order_note(sprintf('Datafast: token para suscripción tomado de response.registrationId (%s).', $registration_id));
+            } elseif ($selected_registration !== '') {
+                $order->add_order_note(sprintf('Datafast: token para suscripción tomado de tarjeta guardada seleccionada (%s).', $selected_registration));
             }
             $create_requested = (string) $order->get_meta('_dfwr_create_registration_requested');
             if ($create_requested === 'yes' && ! $has_registration_id) {
