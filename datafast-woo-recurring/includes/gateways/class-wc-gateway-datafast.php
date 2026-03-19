@@ -74,6 +74,16 @@ class Gateway_Datafast extends WC_Payment_Gateway
             return ['result' => 'fail'];
         }
 
+        $create_registration = ! empty($_POST['createRegistration']);
+        $selected_registration = isset($_POST['dfwr_registration']) ? sanitize_text_field(wp_unslash($_POST['dfwr_registration'])) : '';
+        $order->update_meta_data('_dfwr_create_registration_requested', $create_registration ? 'yes' : 'no');
+        if ($selected_registration !== '') {
+            $order->update_meta_data('_dfwr_selected_registration', $selected_registration);
+        } else {
+            $order->delete_meta_data('_dfwr_selected_registration');
+        }
+        $order->save();
+
         return [
             'result' => 'success',
             'redirect' => $order->get_checkout_payment_url(true),
@@ -102,7 +112,13 @@ class Gateway_Datafast extends WC_Payment_Gateway
         try {
             $merchant_tx = Utils::merchant_transaction_id($order->get_id(), Settings::get('prefijo_trx', 'DF'));
             $selected_registration = isset($_POST['dfwr_registration']) ? sanitize_text_field(wp_unslash($_POST['dfwr_registration'])) : '';
-            $create_registration = isset($_POST['createRegistration']);
+            if ($selected_registration === '') {
+                $selected_registration = (string) $order->get_meta('_dfwr_selected_registration');
+            }
+            $create_registration = ((string) $order->get_meta('_dfwr_create_registration_requested') === 'yes');
+            if (isset($_POST['createRegistration'])) {
+                $create_registration = true;
+            }
             $payload = $this->buildInitialBody($order, $merchant_tx, $create_registration);
             $requires_recurring_token = false;
             foreach ($order->get_items() as $item) {
@@ -134,6 +150,7 @@ class Gateway_Datafast extends WC_Payment_Gateway
             Logger::log('Checkout request', [
                 'order_id' => $order->get_id(),
                 'create_registration_requested' => $create_registration ? 'yes' : 'no',
+                'create_registration_sent' => isset($payload['createRegistration']) ? 'yes' : 'no',
                 'payload' => $payload,
             ]);
             $result = (new Http_Client())->post_form(rtrim($cfg['base_url'], '/') . '/v1/checkouts', $payload, $cfg['bearer'], $cfg['mode'] !== 'prod');
@@ -150,6 +167,11 @@ class Gateway_Datafast extends WC_Payment_Gateway
             $order->update_meta_data('_dfwr_checkout_id', $checkout_id);
             $order->update_meta_data('_dfwr_create_registration_requested', $create_registration ? 'yes' : 'no');
             $order->update_meta_data('_dfwr_checkout_payload', wp_json_encode($payload));
+            $order->add_order_note(sprintf(
+                'Datafast: tokenización solicitada=%s; createRegistration enviado=%s.',
+                $create_registration ? 'yes' : 'no',
+                isset($payload['createRegistration']) ? 'yes' : 'no'
+            ));
             $order->save();
 
             $return_url = add_query_arg(['wc-api' => 'dfwr_return', 'order_id' => $order->get_id(), 'paymentDatafast' => 'confirm'], home_url('/'));
@@ -228,8 +250,12 @@ class Gateway_Datafast extends WC_Payment_Gateway
             }
             $create_requested = (string) $order->get_meta('_dfwr_create_registration_requested');
             if ($create_requested === 'yes' && ! $has_registration_id) {
-                $order->add_order_note(__('Datafast: pago aprobado pero la respuesta no devolvió registrationId; no se pudo guardar token.', 'datafast-woo-recurring'));
+                $order->add_order_note(__('Datafast: tokenización solicitada pero la respuesta no devolvió registrationId.', 'datafast-woo-recurring'));
             }
+            $order->add_order_note(sprintf(
+                'Datafast: respuesta verificada con registrationId=%s.',
+                $has_registration_id ? 'yes (' . $registration_id . ')' : 'no'
+            ));
             $has_recurring = false;
             foreach ($order->get_items() as $item) {
                 $product = $item->get_product();
