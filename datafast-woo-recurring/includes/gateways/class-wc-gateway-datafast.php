@@ -196,6 +196,11 @@ class Gateway_Datafast extends WC_Payment_Gateway
         $verify = $this->processPayment($resource_path);
         $body = $verify['body'] ?? [];
         $state = Verifier::classify($body);
+        Logger::log('Finalize order state', [
+            'order_id' => $order->get_id(),
+            'state' => $state,
+            'payment_id' => $body['id'] ?? '',
+        ]);
         $merchant_tx = (string) $order->get_meta('_dfwr_merchant_transaction_id');
 
         (new Transaction_Repository())->update_by_merchant_tx($merchant_tx, [
@@ -279,6 +284,30 @@ class Gateway_Datafast extends WC_Payment_Gateway
                 $order->add_order_note(__('Datafast: pago aprobado sin registrationId. No se creó suscripción interna.', 'datafast-woo-recurring'));
             }
             $order->save();
+
+            $token_final = (string) $order->get_meta('_dfwr_registration_id');
+            Logger::log('Finalize auto subscription attempt', [
+                'order_id' => $order->get_id(),
+                'state' => $state,
+                'token_final_used' => $token_final,
+                'has_recurring' => $has_recurring ? 'yes' : 'no',
+                'subscription_created_before' => $order->get_meta('_dfwr_subscription_created') === 'yes' ? 'yes' : 'no',
+            ]);
+            if ($has_recurring) {
+                if ($token_final !== '') {
+                    Plugin::instance()->maybe_create_subscription_from_order((int) $order->get_id());
+                    $order = wc_get_order((int) $order->get_id()) ?: $order;
+                    if ($order->get_meta('_dfwr_subscription_created') === 'yes') {
+                        $order->add_order_note(__('Datafast: suscripción creada automáticamente al aprobarse el pago.', 'datafast-woo-recurring'));
+                    } else {
+                        $order->add_order_note(__('Datafast: se intentó crear suscripción automáticamente, pero quedó pendiente.', 'datafast-woo-recurring'));
+                    }
+                    $order->save();
+                } else {
+                    $order->add_order_note(__('Datafast: suscripción pendiente; pago aprobado sin token final para recurrencia.', 'datafast-woo-recurring'));
+                    $order->save();
+                }
+            }
             WC()->cart?->empty_cart();
             return;
         }
