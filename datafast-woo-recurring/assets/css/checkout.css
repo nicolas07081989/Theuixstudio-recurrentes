@@ -210,12 +210,27 @@ body.woocommerce-page h6 {
     color: var(--dfwr-text);
 }
 
+.woocommerce-account .entry-content,
+.woocommerce-account .site-main,
+.woocommerce-account .woocommerce,
+.woocommerce-account .woocommerce-account,
+.woocommerce-account .woocommerce-MyAccount-content,
+.woocommerce-account .u-columns,
+.woocommerce-account .col2-set {
+    width: 100%;
+    max-width: none;
+}
+
 .woocommerce-account .woocommerce {
+    display: block;
+    width: 100%;
+    margin: 0;
+}
+
+body.woocommerce-account.logged-in .woocommerce {
     display: grid;
     grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
     gap: 1.5rem;
-    width: 100%;
-    max-width: 100%;
     align-items: start;
 }
 
@@ -278,16 +293,23 @@ body.woocommerce-page h6 {
 .woocommerce-account .u-columns,
 .woocommerce-account .col2-set {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
+    gap: 2rem;
+    align-items: start;
     width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
 .woocommerce-account .u-column1,
 .woocommerce-account .u-column2,
 .woocommerce-account .col-1,
-.woocommerce-account .col-2 {
+.woocommerce-account .col-2,
+.woocommerce-account form.login,
+.woocommerce-account form.register {
     width: 100% !important;
+    max-width: none !important;
+    min-width: 0;
     float: none !important;
     margin: 0;
 }
@@ -356,6 +378,47 @@ body.woocommerce-page h6 {
     min-width: 0;
 }
 
+.woocommerce-account .u-column1 h2,
+.woocommerce-account .u-column2 h2,
+.woocommerce-account .col-1 h2,
+.woocommerce-account .col-2 h2 {
+    font-family: 'Titillium Web', sans-serif;
+    font-size: clamp(1.45rem, 1.2rem + 0.5vw, 1.85rem);
+    line-height: 1.2;
+    margin: 0 0 1rem;
+    color: var(--dfwr-text);
+}
+
+.woocommerce-account form.login,
+.woocommerce-account form.register {
+    background: #020f0f;
+    border: 1px solid var(--dfwr-border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22);
+}
+
+.woocommerce-account form .form-row,
+.woocommerce-account form p.form-row {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.woocommerce-account form label {
+    font-family: 'Urbanist', sans-serif;
+    font-weight: 600;
+    margin-bottom: .35rem;
+}
+
+.woocommerce-account form input.input-text,
+.woocommerce-account form input[type="text"],
+.woocommerce-account form input[type="email"],
+.woocommerce-account form input[type="password"] {
+    width: 100%;
+    min-height: 46px;
+    font-family: 'Urbanist', sans-serif;
+}
+
 .woocommerce-account .woocommerce-MyAccount-content .shop_table,
 .woocommerce-account .woocommerce-MyAccount-content .woocommerce-MyAccount-orders,
 .woocommerce-account .woocommerce-MyAccount-content .woocommerce-orders-table {
@@ -404,6 +467,8 @@ body.woocommerce-page h6 {
     .woocommerce-account .u-columns,
     .woocommerce-account .col2-set {
         grid-template-columns: 1fr;
+        gap: 1.25rem;
+        max-width: 100%;
     }
 
     .woocommerce-cart .woocommerce-cart-form .actions {
@@ -444,6 +509,16 @@ body.woocommerce-page h6 {
 
     .woocommerce-account .woocommerce {
         grid-template-columns: 1fr;
+    }
+
+    .woocommerce-account form.login,
+    .woocommerce-account form.register {
+        padding: 1rem;
+    }
+
+    .woocommerce-account .woocommerce-form-login .button,
+    .woocommerce-account .woocommerce-form-register .button {
+        width: 100%;
     }
 
     .woocommerce table.shop_table,
