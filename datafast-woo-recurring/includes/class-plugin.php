@@ -57,6 +57,8 @@ final class Plugin
         Cron::init();
         $this->register_checkout_fields();
         $this->register_recurring_product_fields();
+        add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_assets']);
+        add_action('template_redirect', [$this, 'maybe_redirect_guest_for_recurring_checkout']);
 
         add_filter('woocommerce_payment_gateways', static function (array $gateways): array {
             $gateways[] = Gateway_Datafast::class;
@@ -65,6 +67,36 @@ final class Plugin
 
         add_action('woocommerce_order_status_processing', [$this, 'maybe_create_subscription_from_order']);
         add_action('woocommerce_order_status_completed', [$this, 'maybe_create_subscription_from_order']);
+    }
+
+    public function enqueue_frontend_assets(): void
+    {
+        if (! function_exists('is_woocommerce') || (! is_woocommerce() && ! is_cart() && ! is_checkout() && ! is_account_page())) {
+            return;
+        }
+
+        wp_enqueue_style('dfwr-checkout-style', DFWR_PLUGIN_URL . 'assets/css/checkout.css', [], DFWR_VERSION);
+        wp_enqueue_script('dfwr-checkout-script', DFWR_PLUGIN_URL . 'assets/js/checkout.js', [], DFWR_VERSION, true);
+    }
+
+    public function maybe_redirect_guest_for_recurring_checkout(): void
+    {
+        if (is_admin() || wp_doing_ajax() || ! function_exists('is_checkout') || ! is_checkout() || is_order_received_page()) {
+            return;
+        }
+
+        if (is_user_logged_in() || ! $this->cart_has_recurring_product()) {
+            return;
+        }
+
+        wc_add_notice(__('Para contratar una suscripción debes iniciar sesión o crear una cuenta.', 'datafast-woo-recurring'), 'notice');
+        $target = wc_get_page_permalink('myaccount');
+        $checkout_url = wc_get_checkout_url();
+        if ($checkout_url) {
+            $target = add_query_arg('redirect_to', rawurlencode($checkout_url), $target);
+        }
+        wp_safe_redirect($target);
+        exit;
     }
 
     private function register_checkout_fields(): void
@@ -129,6 +161,18 @@ final class Plugin
                 $order->update_meta_data('_billing_middle_name', sanitize_text_field($data['billing_middle_name']));
             }
         }, 10, 2);
+    }
+
+    private function cart_has_recurring_product(): bool
+    {
+        foreach (WC()->cart?->get_cart() ?? [] as $cart_item) {
+            $product = $cart_item['data'] ?? null;
+            if ($product && $product->get_meta('_dfwr_is_recurring') === 'yes') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function register_recurring_product_fields(): void

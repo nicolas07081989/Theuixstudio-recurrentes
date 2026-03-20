@@ -12,7 +12,7 @@ class Gateway_Datafast extends WC_Payment_Gateway
         $this->method_title = __('Datafast', 'datafast-woo-recurring');
         $this->method_description = __('Pasarela Datafast Dataweb', 'datafast-woo-recurring');
         $this->has_fields = true;
-        $this->icon = DFWR_PLUGIN_URL . 'assets/css/datafast.png';
+        $this->icon = '';
 
         $this->init_form_fields();
         $this->init_settings();
