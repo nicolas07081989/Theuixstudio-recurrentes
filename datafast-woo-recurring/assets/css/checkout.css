@@ -161,6 +161,13 @@ body.woocommerce-page h6 {
     align-items: start;
 }
 
+.woocommerce-account .entry-content .woocommerce,
+.woocommerce-account .site-main .woocommerce,
+.woocommerce-account .woocommerce-MyAccount-content > * {
+    max-width: none !important;
+    width: 100%;
+}
+
 .woocommerce-account .woocommerce-MyAccount-navigation ul {
     list-style: none;
     margin: 0;
@@ -199,6 +206,7 @@ body.woocommerce-page h6 {
 .woocommerce-account .woocommerce-MyAccount-content {
     width: 100%;
     min-width: 0;
+    padding: 1.25rem;
 }
 
 .woocommerce-account .u-columns,
@@ -281,6 +289,31 @@ body.woocommerce-page h6 {
     width: 100%;
 }
 
+.woocommerce-account .woocommerce-MyAccount-content .shop_table,
+.woocommerce-account .woocommerce-MyAccount-content .woocommerce-MyAccount-orders,
+.woocommerce-account .woocommerce-MyAccount-content .woocommerce-orders-table {
+    width: 100%;
+    min-width: 760px;
+}
+
+.woocommerce-account .woocommerce-Addresses .woocommerce-Address,
+.woocommerce-account .woocommerce-EditAccountForm,
+.woocommerce-account .woocommerce-form-login,
+.woocommerce-account .woocommerce-form-register {
+    width: 100%;
+    max-width: none;
+}
+
+.dfwr-order-details-actions {
+    margin-top: 1rem;
+}
+
+.dfwr-account-back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .woocommerce-account .woocommerce-form-login .button,
 .woocommerce-account .woocommerce-form-register .button {
     width: 100%;
@@ -338,6 +371,12 @@ body.woocommerce-page h6 {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         white-space: nowrap;
+    }
+
+    .woocommerce-account .woocommerce-MyAccount-content .shop_table,
+    .woocommerce-account .woocommerce-MyAccount-content .woocommerce-MyAccount-orders,
+    .woocommerce-account .woocommerce-MyAccount-content .woocommerce-orders-table {
+        min-width: 0;
     }
 }
 

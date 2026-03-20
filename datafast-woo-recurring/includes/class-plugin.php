@@ -61,6 +61,7 @@ final class Plugin
         add_filter('woocommerce_get_checkout_url', [$this, 'filter_checkout_url_for_recurring_guests']);
         add_action('template_redirect', [$this, 'maybe_show_recurring_login_notice']);
         add_action('woocommerce_review_order_before_payment', [$this, 'render_checkout_security_microcopy']);
+        add_action('woocommerce_order_details_after_order_table', [$this, 'render_order_details_account_button']);
 
         add_filter('woocommerce_payment_gateways', static function (array $gateways): array {
             $gateways[] = Gateway_Datafast::class;
@@ -115,6 +116,16 @@ final class Plugin
         }
 
         echo '<p class="dfwr-security-copy">' . esc_html__('Pago protegido y procesado mediante Datafast. Tus datos se procesan en un entorno seguro.', 'datafast-woo-recurring') . '</p>';
+    }
+
+    public function render_order_details_account_button(): void
+    {
+        if (! is_user_logged_in()) {
+            return;
+        }
+
+        $url = wc_get_page_permalink('myaccount');
+        echo '<p class="dfwr-order-details-actions"><a class="button dfwr-account-back-btn" href="' . esc_url($url) . '">' . esc_html__('Ir a mi cuenta', 'datafast-woo-recurring') . '</a></p>';
     }
 
     private function register_checkout_fields(): void
