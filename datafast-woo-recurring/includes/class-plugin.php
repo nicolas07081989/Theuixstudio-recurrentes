@@ -60,6 +60,7 @@ final class Plugin
         add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_assets']);
         add_filter('woocommerce_get_checkout_url', [$this, 'filter_checkout_url_for_recurring_guests']);
         add_action('template_redirect', [$this, 'maybe_show_recurring_login_notice']);
+        add_action('woocommerce_review_order_before_payment', [$this, 'render_checkout_security_microcopy']);
 
         add_filter('woocommerce_payment_gateways', static function (array $gateways): array {
             $gateways[] = Gateway_Datafast::class;
@@ -105,6 +106,15 @@ final class Plugin
         if ($show_notice) {
             wc_add_notice(__('Para contratar una suscripción debes iniciar sesión o crear una cuenta.', 'datafast-woo-recurring'), 'notice');
         }
+    }
+
+    public function render_checkout_security_microcopy(): void
+    {
+        if (! function_exists('is_checkout') || ! is_checkout()) {
+            return;
+        }
+
+        echo '<p class="dfwr-security-copy">' . esc_html__('Pago protegido y procesado mediante Datafast. Tus datos se procesan en un entorno seguro.', 'datafast-woo-recurring') . '</p>';
     }
 
     private function register_checkout_fields(): void
