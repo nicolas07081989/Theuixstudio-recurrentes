@@ -148,6 +148,33 @@ body.woocommerce-page h6 {
     font-weight: 700 !important;
 }
 
+.dfwr-widget-toggle {
+    margin: 0 0 1rem;
+    padding: .65rem 1rem;
+    border: 1px solid var(--dfwr-accent);
+    border-radius: 6px;
+    color: #000808;
+    background: var(--dfwr-accent);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.dfwr-hide-manual-widget .wpwl-form-card,
+.dfwr-hide-manual-widget .wpwl-wrapper-payment {
+    display: none !important;
+}
+
+.woocommerce-account .woocommerce-form-login,
+.woocommerce-account .woocommerce-form-register {
+    display: grid;
+    gap: .75rem;
+}
+
+.woocommerce-account .woocommerce-form-login .button,
+.woocommerce-account .woocommerce-form-register .button {
+    width: 100%;
+}
+
 @media (max-width: 991px) {
     .woocommerce table.shop_table_responsive tr td::before,
     .woocommerce-page table.shop_table_responsive tr td::before {
@@ -173,5 +200,9 @@ body.woocommerce-page h6 {
 
     .woocommerce .checkout_coupon .button {
         width: 100%;
+    }
+
+    .woocommerce-account .woocommerce-MyAccount-navigation {
+        margin-bottom: 1rem;
     }
 }

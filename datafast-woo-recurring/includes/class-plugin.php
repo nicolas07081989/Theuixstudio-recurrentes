@@ -58,7 +58,8 @@ final class Plugin
         $this->register_checkout_fields();
         $this->register_recurring_product_fields();
         add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_assets']);
-        add_action('template_redirect', [$this, 'maybe_redirect_guest_for_recurring_checkout']);
+        add_filter('woocommerce_get_checkout_url', [$this, 'filter_checkout_url_for_recurring_guests']);
+        add_action('template_redirect', [$this, 'maybe_show_recurring_login_notice']);
 
         add_filter('woocommerce_payment_gateways', static function (array $gateways): array {
             $gateways[] = Gateway_Datafast::class;
@@ -79,24 +80,31 @@ final class Plugin
         wp_enqueue_script('dfwr-checkout-script', DFWR_PLUGIN_URL . 'assets/js/checkout.js', [], DFWR_VERSION, true);
     }
 
-    public function maybe_redirect_guest_for_recurring_checkout(): void
+    public function filter_checkout_url_for_recurring_guests(string $checkout_url): string
     {
-        if (is_admin() || wp_doing_ajax() || ! function_exists('is_checkout') || ! is_checkout() || is_order_received_page()) {
-            return;
+        if (is_admin() || wp_doing_ajax() || is_user_logged_in() || ! $this->cart_has_recurring_product()) {
+            return $checkout_url;
         }
 
-        if (is_user_logged_in() || ! $this->cart_has_recurring_product()) {
-            return;
-        }
-
-        wc_add_notice(__('Para contratar una suscripción debes iniciar sesión o crear una cuenta.', 'datafast-woo-recurring'), 'notice');
         $target = wc_get_page_permalink('myaccount');
-        $checkout_url = wc_get_checkout_url();
-        if ($checkout_url) {
-            $target = add_query_arg('redirect_to', rawurlencode($checkout_url), $target);
+        return add_query_arg(
+            [
+                'dfwr_recurring_gate' => '1',
+                'redirect_to' => rawurlencode($checkout_url),
+            ],
+            $target
+        );
+    }
+
+    public function maybe_show_recurring_login_notice(): void
+    {
+        if (is_admin() || wp_doing_ajax() || ! function_exists('is_account_page') || ! is_account_page()) {
+            return;
         }
-        wp_safe_redirect($target);
-        exit;
+        $show_notice = isset($_GET['dfwr_recurring_gate']) && sanitize_text_field(wp_unslash($_GET['dfwr_recurring_gate'])) === '1';
+        if ($show_notice) {
+            wc_add_notice(__('Para contratar una suscripción debes iniciar sesión o crear una cuenta.', 'datafast-woo-recurring'), 'notice');
+        }
     }
 
     private function register_checkout_fields(): void
