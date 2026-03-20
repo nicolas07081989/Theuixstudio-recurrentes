@@ -146,6 +146,64 @@ body.woocommerce-page h6 {
     flex: 1 1 220px;
 }
 
+.woocommerce-cart .cart-collaterals {
+    margin-top: 1.25rem;
+}
+
+.woocommerce-cart .woocommerce-cart-form .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    align-items: center;
+}
+
+.woocommerce-cart .woocommerce-cart-form .coupon {
+    display: flex;
+    flex: 1 1 420px;
+    gap: .65rem;
+    align-items: center;
+}
+
+.woocommerce-cart .woocommerce-cart-form .coupon > * {
+    margin: 0 !important;
+}
+
+.woocommerce-cart .woocommerce-cart-form .coupon input.input-text {
+    flex: 1 1 auto;
+    min-width: 220px;
+}
+
+.woocommerce-cart .woocommerce-cart-form .button[name="update_cart"] {
+    margin-left: auto;
+}
+
+.woocommerce-order-pay .woocommerce {
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+.woocommerce-order-pay .woocommerce .shop_table,
+.woocommerce-order-pay #payment {
+    background: #020f0f;
+    border: 1px solid var(--dfwr-border);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+.woocommerce-order-pay #payment .payment_methods {
+    margin-bottom: 1rem;
+}
+
+.woocommerce-order-pay #payment::before {
+    content: "Pago seguro TheUIXstudio";
+    display: block;
+    font-family: 'Titillium Web', sans-serif;
+    font-size: 1.15rem;
+    margin-bottom: .75rem;
+    color: var(--dfwr-text);
+}
+
 .woocommerce .wc_payment_method .payment_box {
     background: #031111 !important;
     border: 1px solid var(--dfwr-border);
@@ -166,6 +224,11 @@ body.woocommerce-page h6 {
 .woocommerce-account .woocommerce-MyAccount-content > * {
     max-width: none !important;
     width: 100%;
+}
+
+.woocommerce-account .woocommerce-MyAccount-navigation,
+.woocommerce-account .woocommerce-MyAccount-content {
+    float: none !important;
 }
 
 .woocommerce-account .woocommerce-MyAccount-navigation ul {
@@ -207,6 +270,9 @@ body.woocommerce-page h6 {
     width: 100%;
     min-width: 0;
     padding: 1.25rem;
+    border: 1px solid var(--dfwr-border);
+    border-radius: 10px;
+    background: #020f0f;
 }
 
 .woocommerce-account .u-columns,
@@ -287,6 +353,7 @@ body.woocommerce-page h6 {
     display: grid;
     gap: .75rem;
     width: 100%;
+    min-width: 0;
 }
 
 .woocommerce-account .woocommerce-MyAccount-content .shop_table,
@@ -337,6 +404,22 @@ body.woocommerce-page h6 {
     .woocommerce-account .u-columns,
     .woocommerce-account .col2-set {
         grid-template-columns: 1fr;
+    }
+
+    .woocommerce-cart .woocommerce-cart-form .actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .woocommerce-cart .woocommerce-cart-form .coupon {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .woocommerce-cart .woocommerce-cart-form .button[name="update_cart"] {
+        margin-left: 0;
+        width: 100%;
     }
 }
 
