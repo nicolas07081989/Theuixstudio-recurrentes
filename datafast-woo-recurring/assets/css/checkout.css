@@ -154,8 +154,11 @@ body.woocommerce-page h6 {
 
 .woocommerce-account .woocommerce {
     display: grid;
-    grid-template-columns: minmax(220px, 260px) 1fr;
-    gap: 1.25rem;
+    grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+    align-items: start;
 }
 
 .woocommerce-account .woocommerce-MyAccount-navigation ul {
@@ -191,6 +194,28 @@ body.woocommerce-page h6 {
 
 .woocommerce-account .woocommerce-MyAccount-navigation-link--downloads {
     opacity: 0.55;
+}
+
+.woocommerce-account .woocommerce-MyAccount-content {
+    width: 100%;
+    min-width: 0;
+}
+
+.woocommerce-account .u-columns,
+.woocommerce-account .col2-set {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    width: 100%;
+}
+
+.woocommerce-account .u-column1,
+.woocommerce-account .u-column2,
+.woocommerce-account .col-1,
+.woocommerce-account .col-2 {
+    width: 100% !important;
+    float: none !important;
+    margin: 0;
 }
 
 .woocommerce-Addresses .woocommerce-Address--shipping,
@@ -253,6 +278,7 @@ body.woocommerce-page h6 {
 .woocommerce-account .woocommerce-form-register {
     display: grid;
     gap: .75rem;
+    width: 100%;
 }
 
 .woocommerce-account .woocommerce-form-login .button,
@@ -269,6 +295,15 @@ body.woocommerce-page h6 {
     .woocommerce table.shop_table,
     .woocommerce-page table.shop_table {
         font-size: 0.95rem;
+    }
+
+    .woocommerce-account .woocommerce {
+        grid-template-columns: 1fr;
+    }
+
+    .woocommerce-account .u-columns,
+    .woocommerce-account .col2-set {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -293,5 +328,34 @@ body.woocommerce-page h6 {
 
     .woocommerce-account .woocommerce {
         grid-template-columns: 1fr;
+    }
+
+    .woocommerce table.shop_table,
+    .woocommerce .woocommerce-MyAccount-orders,
+    .woocommerce .woocommerce-orders-table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+    }
+}
+
+@media (min-width: 992px) {
+    .woocommerce table.shop_table_responsive tr,
+    .woocommerce-page table.shop_table_responsive tr {
+        display: table-row;
+    }
+
+    .woocommerce table.shop_table_responsive tr td,
+    .woocommerce-page table.shop_table_responsive tr td {
+        display: table-cell;
+        text-align: left !important;
+        padding-left: 1em !important;
+    }
+
+    .woocommerce table.shop_table_responsive tr td::before,
+    .woocommerce-page table.shop_table_responsive tr td::before {
+        display: none !important;
     }
 }
