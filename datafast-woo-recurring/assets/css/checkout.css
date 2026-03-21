@@ -195,15 +195,6 @@ body.woocommerce-page h6 {
     margin-bottom: 1rem;
 }
 
-.woocommerce-order-pay #payment::before {
-    content: "Pago seguro TheUIXstudio";
-    display: block;
-    font-family: 'Titillium Web', sans-serif;
-    font-size: 1.15rem;
-    margin-bottom: .75rem;
-    color: var(--dfwr-text);
-}
-
 .woocommerce .wc_payment_method .payment_box {
     background: #031111 !important;
     border: 1px solid var(--dfwr-border);
@@ -213,6 +204,8 @@ body.woocommerce-page h6 {
 .woocommerce-account .entry-content,
 .woocommerce-account .site-main,
 .woocommerce-account .content-area,
+.woocommerce-account .ast-container,
+.woocommerce-account .site-content,
 .woocommerce-account .elementor-location-my-account,
 .woocommerce-account .elementor-widget-woocommerce-my-account,
 .woocommerce-account .woocommerce,
@@ -229,6 +222,17 @@ body.woocommerce-page h6 {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
+}
+
+body.woocommerce-account .site-main,
+body.woocommerce-account .content-area,
+body.woocommerce-account .ast-container,
+body.woocommerce-account .site-content,
+body.woocommerce-account .elementor-section .elementor-container {
+    width: min(100%, 1280px);
+    max-width: 1280px !important;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 body.woocommerce-account.logged-in .woocommerce {
@@ -255,6 +259,16 @@ body.woocommerce-account:not(.logged-in) .woocommerce {
 .woocommerce-account .woocommerce-MyAccount-navigation,
 .woocommerce-account .woocommerce-MyAccount-content {
     float: none !important;
+}
+
+body.woocommerce-account.logged-in .woocommerce-MyAccount-navigation {
+    width: 100%;
+    max-width: 300px;
+}
+
+body.woocommerce-account.logged-in .woocommerce-MyAccount-content {
+    width: 100%;
+    max-width: none;
 }
 
 .woocommerce-account .woocommerce-MyAccount-navigation ul {
@@ -344,34 +358,6 @@ body.woocommerce-account:not(.logged-in) .col2-set {
     color: var(--dfwr-text);
     background: rgba(163, 252, 0, 0.08);
     font-size: .95rem;
-}
-
-.wpwl-form,
-.wpwl-form-card,
-.wpwl-control,
-.wpwl-label,
-.wpwl-group {
-    color: var(--dfwr-text) !important;
-}
-
-.wpwl-control {
-    background: #071414 !important;
-    border: 1px solid var(--dfwr-border) !important;
-}
-
-.wpwl-control::placeholder {
-    color: rgba(255, 255, 255, 0.8) !important;
-}
-
-.wpwl-button-pay {
-    background: var(--dfwr-accent) !important;
-    color: #000808 !important;
-    border: 1px solid var(--dfwr-accent) !important;
-    border-radius: 6px !important;
-    font-weight: 700 !important;
-    position: relative;
-    z-index: 2;
-    pointer-events: auto !important;
 }
 
 .woocommerce-account .woocommerce-form-login,
