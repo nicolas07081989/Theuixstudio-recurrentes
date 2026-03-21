@@ -79,14 +79,10 @@ final class Plugin
         }
 
         $style_rel = 'assets/css/checkout.css';
-        $script_rel = 'assets/js/checkout.js';
         $style_path = DFWR_PLUGIN_DIR . $style_rel;
-        $script_path = DFWR_PLUGIN_DIR . $script_rel;
         $style_ver = file_exists($style_path) ? (string) filemtime($style_path) : DFWR_VERSION;
-        $script_ver = file_exists($script_path) ? (string) filemtime($script_path) : DFWR_VERSION;
 
         wp_enqueue_style('dfwr-checkout-style', DFWR_PLUGIN_URL . $style_rel, [], $style_ver);
-        wp_enqueue_script('dfwr-checkout-script', DFWR_PLUGIN_URL . $script_rel, [], $script_ver, true);
     }
 
     public function filter_checkout_url_for_recurring_guests(string $checkout_url): string
