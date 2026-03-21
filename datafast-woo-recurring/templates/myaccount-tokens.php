@@ -2,8 +2,10 @@
 if (! defined('ABSPATH')) { exit; }
 $tokens = $tokens ?? [];
 ?>
+<section class="dfwr-account-section dfwr-account-tokens">
+<div class="dfwr-account-card">
 <h3><?php esc_html_e('Tarjetas guardadas', 'datafast-woo-recurring'); ?></h3>
-<table class="shop_table shop_table_responsive">
+<table class="shop_table shop_table_responsive dfwr-account-table dfwr-tokens-table">
 <thead><tr><th>ID</th><th>Marca</th><th>Últimos 4</th><th>Expira</th><th></th></tr></thead>
 <tbody>
 <?php foreach ($tokens as $token) : ?>
@@ -17,6 +19,8 @@ $tokens = $tokens ?? [];
 <?php endforeach; ?>
 </tbody>
 </table>
+</div>
+</section>
 <script>
 document.querySelectorAll('.dfwr-delete-token').forEach(function(btn){
  btn.addEventListener('click', function(){

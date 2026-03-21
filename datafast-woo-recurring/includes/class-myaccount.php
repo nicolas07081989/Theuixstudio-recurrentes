@@ -51,7 +51,32 @@ class MyAccount
     {
         $items['datafast-tokens'] = __('Tarjetas guardadas', 'datafast-woo-recurring');
         $items['datafast-subscriptions'] = __('Suscripciones Datafast', 'datafast-woo-recurring');
-        return $items;
+
+        $ordered_keys = [
+            'dashboard',
+            'orders',
+            'downloads',
+            'edit-address',
+            'edit-account',
+            'datafast-tokens',
+            'datafast-subscriptions',
+            'customer-logout',
+        ];
+
+        $ordered_items = [];
+        foreach ($ordered_keys as $key) {
+            if (isset($items[$key])) {
+                $ordered_items[$key] = $items[$key];
+            }
+        }
+
+        foreach ($items as $key => $label) {
+            if (! isset($ordered_items[$key])) {
+                $ordered_items[$key] = $label;
+            }
+        }
+
+        return $ordered_items;
     }
 
     public static function render_tokens(): void
