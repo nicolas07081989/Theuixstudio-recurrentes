@@ -212,19 +212,23 @@ body.woocommerce-page h6 {
 
 .woocommerce-account .entry-content,
 .woocommerce-account .site-main,
+.woocommerce-account .content-area,
+.woocommerce-account .elementor-location-my-account,
+.woocommerce-account .elementor-widget-woocommerce-my-account,
 .woocommerce-account .woocommerce,
 .woocommerce-account .woocommerce-account,
 .woocommerce-account .woocommerce-MyAccount-content,
 .woocommerce-account .u-columns,
 .woocommerce-account .col2-set {
     width: 100%;
-    max-width: none;
+    max-width: none !important;
 }
 
 .woocommerce-account .woocommerce {
     display: block;
     width: 100%;
-    margin: 0;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 body.woocommerce-account.logged-in .woocommerce {
@@ -232,6 +236,13 @@ body.woocommerce-account.logged-in .woocommerce {
     grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
     gap: 1.5rem;
     align-items: start;
+    max-width: 1280px;
+}
+
+body.woocommerce-account:not(.logged-in) .woocommerce {
+    display: block;
+    max-width: 1160px;
+    margin: 0 auto;
 }
 
 .woocommerce-account .entry-content .woocommerce,
@@ -300,6 +311,11 @@ body.woocommerce-account.logged-in .woocommerce {
     width: 100%;
     max-width: 1100px;
     margin: 0 auto;
+}
+
+body.woocommerce-account:not(.logged-in) .u-columns,
+body.woocommerce-account:not(.logged-in) .col2-set {
+    max-width: 1160px;
 }
 
 .woocommerce-account .u-column1,
@@ -420,6 +436,7 @@ body.woocommerce-account.logged-in .woocommerce {
 .woocommerce-account .woocommerce-MyAccount-content .woocommerce-Address,
 .woocommerce-account .woocommerce-MyAccount-content .woocommerce-address-fields,
 .woocommerce-account .woocommerce-MyAccount-content .woocommerce-EditAccountForm,
+.woocommerce-account .woocommerce-MyAccount-content .woocommerce-MyAccount-dashboard,
 .woocommerce-account .woocommerce-MyAccount-content .woocommerce-orders-table__cell-order-actions {
     width: 100%;
     max-width: none;
@@ -464,7 +481,9 @@ body.woocommerce-account.logged-in .woocommerce {
     }
 
     .woocommerce-account .woocommerce {
+        display: block;
         grid-template-columns: 1fr;
+        max-width: 100%;
     }
 
     .woocommerce-account .u-columns,
@@ -511,7 +530,9 @@ body.woocommerce-account.logged-in .woocommerce {
     }
 
     .woocommerce-account .woocommerce {
+        display: block;
         grid-template-columns: 1fr;
+        max-width: 100%;
     }
 
     .woocommerce-account form.login,
