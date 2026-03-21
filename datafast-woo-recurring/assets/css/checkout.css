@@ -183,6 +183,13 @@ body.woocommerce-page h6 {
     padding: 0 1rem;
 }
 
+.woocommerce-order-pay .woocommerce .shop_table,
+.woocommerce-order-pay .woocommerce #payment {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto 1rem;
+}
+
 .woocommerce-order-pay #payment,
 .woocommerce-order-pay .wc_payment_method,
 .woocommerce-order-pay .payment_box {
@@ -227,10 +234,10 @@ body.woocommerce-account .elementor-section .elementor-container {
 
 body.woocommerce-account.logged-in .woocommerce {
     display: grid;
-    grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
-    gap: 1.5rem;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 2rem;
     align-items: start;
-    max-width: 1280px;
+    max-width: 1220px;
 }
 
 body.woocommerce-account:not(.logged-in) .woocommerce {
@@ -259,7 +266,7 @@ body.woocommerce-account:not(.logged-in) .woocommerce-MyAccount-content {
 
 body.woocommerce-account.logged-in .woocommerce-MyAccount-navigation {
     width: 100%;
-    max-width: 300px;
+    max-width: 280px;
 }
 
 body.woocommerce-account.logged-in .woocommerce-MyAccount-content {
@@ -268,12 +275,18 @@ body.woocommerce-account.logged-in .woocommerce-MyAccount-content {
 }
 
 .woocommerce-account .woocommerce-MyAccount-navigation ul {
+    display: flex;
+    flex-direction: column;
     list-style: none;
     margin: 0;
     padding: 0;
     border: 1px solid var(--dfwr-border);
     border-radius: 10px;
     background: #021111;
+}
+
+.woocommerce-account .woocommerce-MyAccount-navigation-link--customer-logout {
+    order: 99;
 }
 
 .woocommerce-account .woocommerce-MyAccount-navigation ul li {
@@ -310,6 +323,11 @@ body.woocommerce-account.logged-in .woocommerce-MyAccount-content {
     border-radius: 10px;
     background: #020f0f;
     overflow: visible;
+}
+
+.woocommerce-account .woocommerce-MyAccount-content .woocommerce-MyAccount-dashboard {
+    width: 100%;
+    max-width: 820px;
 }
 
 .woocommerce-account .u-columns,
@@ -409,7 +427,7 @@ body.woocommerce-account:not(.logged-in) .col2-set {
 .woocommerce-account .woocommerce-MyAccount-content .woocommerce-MyAccount-orders,
 .woocommerce-account .woocommerce-MyAccount-content .woocommerce-orders-table {
     width: 100%;
-    min-width: 760px;
+    min-width: 720px;
 }
 
 .woocommerce-account .woocommerce-MyAccount-content .woocommerce-table,
@@ -426,6 +444,27 @@ body.woocommerce-account:not(.logged-in) .col2-set {
 
 .woocommerce-account .woocommerce-MyAccount-content .woocommerce-orders-table__cell-order-actions .button {
     margin-bottom: .35rem;
+}
+
+.woocommerce-account .woocommerce-MyAccount-content .woocommerce-Addresses {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.25rem;
+}
+
+.woocommerce-account .woocommerce-MyAccount-content .woocommerce-Addresses .woocommerce-Address {
+    width: 100%;
+    max-width: none;
+}
+
+.woocommerce-account .woocommerce-MyAccount-content .woocommerce-EditAccountForm {
+    width: 100%;
+    max-width: 860px;
+}
+
+.woocommerce-account .woocommerce-MyAccount-content .woocommerce-info,
+.woocommerce-account .woocommerce-MyAccount-content .woocommerce-message {
+    max-width: 720px;
 }
 
 .woocommerce-account .woocommerce-Addresses .woocommerce-Address,
@@ -451,6 +490,11 @@ body.woocommerce-account:not(.logged-in) .col2-set {
     width: 100%;
 }
 
+.woocommerce-account:not(.logged-in) .u-columns,
+.woocommerce-account:not(.logged-in) .col2-set {
+    gap: 2rem;
+}
+
 @media (max-width: 991px) {
     .woocommerce table.shop_table_responsive tr td::before,
     .woocommerce-page table.shop_table_responsive tr td::before {
@@ -465,6 +509,10 @@ body.woocommerce-account:not(.logged-in) .col2-set {
     .woocommerce-account .woocommerce {
         display: block;
         grid-template-columns: 1fr;
+        max-width: 100%;
+    }
+
+    body.woocommerce-account.logged-in .woocommerce-MyAccount-navigation {
         max-width: 100%;
     }
 
@@ -515,6 +563,12 @@ body.woocommerce-account:not(.logged-in) .col2-set {
         display: block;
         grid-template-columns: 1fr;
         max-width: 100%;
+    }
+
+    .woocommerce-account .woocommerce-MyAccount-content .shop_table,
+    .woocommerce-account .woocommerce-MyAccount-content .woocommerce-MyAccount-orders,
+    .woocommerce-account .woocommerce-MyAccount-content .woocommerce-orders-table {
+        min-width: 0;
     }
 
     .woocommerce-account form.login,
