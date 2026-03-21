@@ -180,25 +180,13 @@ body.woocommerce-page h6 {
 .woocommerce-order-pay .woocommerce {
     max-width: 980px;
     margin: 0 auto;
+    padding: 0 1rem;
 }
 
-.woocommerce-order-pay .woocommerce .shop_table,
-.woocommerce-order-pay #payment {
-    background: #020f0f;
-    border: 1px solid var(--dfwr-border);
-    border-radius: 12px;
-    padding: 1rem;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
-}
-
-.woocommerce-order-pay #payment .payment_methods {
-    margin-bottom: 1rem;
-}
-
-.woocommerce .wc_payment_method .payment_box {
-    background: #031111 !important;
-    border: 1px solid var(--dfwr-border);
-    color: var(--dfwr-text);
+.woocommerce-order-pay #payment,
+.woocommerce-order-pay .wc_payment_method,
+.woocommerce-order-pay .payment_box {
+    position: static;
 }
 
 .woocommerce-account .entry-content,
@@ -229,10 +217,12 @@ body.woocommerce-account .content-area,
 body.woocommerce-account .ast-container,
 body.woocommerce-account .site-content,
 body.woocommerce-account .elementor-section .elementor-container {
-    width: min(100%, 1280px);
+    width: min(100%, 1280px) !important;
     max-width: 1280px !important;
     margin-left: auto;
     margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 body.woocommerce-account.logged-in .woocommerce {
@@ -247,6 +237,12 @@ body.woocommerce-account:not(.logged-in) .woocommerce {
     display: block;
     max-width: 1160px;
     margin: 0 auto;
+}
+
+body.woocommerce-account:not(.logged-in) .woocommerce-MyAccount-content {
+    width: 100%;
+    max-width: none !important;
+    margin: 0;
 }
 
 .woocommerce-account .entry-content .woocommerce,
